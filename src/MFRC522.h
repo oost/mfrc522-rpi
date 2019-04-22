@@ -93,6 +93,7 @@
 // #include <SPI.h>
 
 typedef char unsigned byte;
+typedef char __FlashStringHelper;
 // typedef bool boolean;
 
 #ifndef MFRC522_SPICLOCK
@@ -277,9 +278,11 @@ public:
                                // //
                                // reserved for production tests
                                // 						  0x3D
-                           // // reserved for production tests 						  0x3E
-                           // // reserved for production tests 						  0x3F
-                           // // reserved for production tests
+                               // // reserved for production tests
+                               // 0x3E
+                               // // reserved for production tests
+                               // 0x3F
+                               // // reserved for production tests
   };
 
   // MFRC522 commands. Described in chapter 10 of the datasheet.
@@ -509,12 +512,12 @@ public:
   // old function used too much memory, now name moved to flash; if you need
   // char, copy from flash to memory
   // const char *GetStatusCodeName(byte code);
-  static const char *GetStatusCodeName(StatusCode code);
+  static const __FlashStringHelper *GetStatusCodeName(StatusCode code);
   static PICC_Type PICC_GetType(byte sak);
   // old function used too much memory, now name moved to flash; if you need
   // char, copy from flash to memory
   // const char *PICC_GetTypeName(byte type);
-  static const char *PICC_GetTypeName(PICC_Type type);
+  static const __FlashStringHelper *PICC_GetTypeName(PICC_Type type);
 
   // Support functions for debuging
   void PCD_DumpVersionToSerial();
