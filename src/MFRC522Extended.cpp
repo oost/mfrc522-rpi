@@ -7,6 +7,7 @@
 
 #include "MFRC522Extended.h"
 #include "Serial.h"
+#include <string.h>
 #include <wiringPi.h>
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +32,7 @@
  * 		single				 4
  * 1 MIFARE Classic double				 7 2
  * MIFARE Ultralight triple
- * 10						3				Not
- * currently in use?
+ * 10						3 Not currently in use?
  *
  * @return STATUS_OK on success, STATUS_??? otherwise.
  */
@@ -69,13 +69,12 @@ MFRC522::StatusCode MFRC522Extended::PICC_Select(
   // Level:
   // PICC_CMD_SEL_CL1, PICC_CMD_SEL_CL2 or PICC_CMD_SEL_CL3 		Byte 1:
   // NVB Number of Valid Bits (in complete command, not just the UID): High
-  // nibble: complete bytes, Low nibble: Extra bits. 		Byte 2: UID-data or
-  // CT
-  // See explanation below. CT means Cascade Tag. 		Byte 3: UID-data
-  // Byte 4: UID-data 		Byte 5: UID-data 		Byte 6: BCC
-  // Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A 		Byte
-  // 8: CRC_A The BCC and CRC_A are only transmitted if we know all the UID bits
-  // of the current Cascade Level.
+  // nibble: complete bytes, Low nibble: Extra bits. 		Byte 2: UID-data
+  // or CT See explanation below. CT means Cascade Tag. 		Byte 3:
+  // UID-data Byte 4: UID-data 		Byte 5: UID-data 		Byte 6:
+  // BCC Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A
+  // Byte 8: CRC_A The BCC and CRC_A are only transmitted if we know all the UID
+  // bits of the current Cascade Level.
   //
   // Description of bytes 2-5: (Section 6.5.4 of the ISO/IEC 14443-3 draft: UID
   // contents and cascade levels)
@@ -85,10 +84,9 @@ MFRC522::StatusCode MFRC522Extended::PICC_Select(
   // uid2 uid3 		 7 bytes		1			CT
   // uid0 uid1	uid2 						2
   // uid3	uid4	uid5	uid6 		10 bytes 1
-  // CT		uid0	uid1	uid2 						2			CT
-  // uid3
-  // uid4 uid5 						3
-  // uid6	uid7	uid8	uid9
+  // CT		uid0	uid1	uid2 2
+  // CT uid3 uid4 uid5 						3 uid6	uid7
+  // uid8	uid9
 
   // Sanity checks
   if (validBits > 80) {

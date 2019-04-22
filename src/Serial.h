@@ -8,14 +8,14 @@
 #define DEC 1
 #define HEX 2
 
-class Serial {
+class SerialMock {
 public:
-  static void print(const std::string &text) { std::cout << text; }
-  static void println(const std::string &text) { std::cout << text << "\n"; }
-  static void println() { std::cout << "\n"; }
+  inline void print(const std::string &text) { std::cout << text; }
+  inline void println(const std::string &text) { std::cout << text << "\n"; }
+  inline void println() { std::cout << "\n"; }
 
-  static void print(unsigned char val) { std::cout << val; }
-  static void print(unsigned char val, int type) {
+  inline void print(unsigned char val) { std::cout << val; }
+  inline void print(unsigned char val, int type) {
     if (type == HEX) {
       std::cout << static_cast<int>(val);
     } else if (type == DEC) {
@@ -25,14 +25,16 @@ public:
     }
   }
 
-  static void println(unsigned char val) {
+  inline void println(unsigned char val) {
     print(val);
     std::cout << "\n";
   }
-  static void println(unsigned char val, int type) {
+  inline void println(unsigned char val, int type) {
     print(val, type);
     std::cout << "\n";
   }
 };
+
+SerialMock Serial;
 
 #endif

@@ -85,6 +85,7 @@
 
 #include "deprecated.h"
 #include "require_cpp11.h"
+#include <cstddef>
 // Enable integer limits
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
@@ -95,8 +96,8 @@ typedef char unsigned byte;
 // typedef bool boolean;
 
 #ifndef MFRC522_SPICLOCK
-#define MFRC522_SPICLOCK SPI_CLOCK_DIV4 // MFRC522 accept upto 10MHz
-#define MFRC522_SPICLOCK 1000000        // MFRC522 accept upto 10MHz
+// #define MFRC522_SPICLOCK SPI_CLOCK_DIV4 // MFRC522 accept upto 10MHz
+#define MFRC522_SPICLOCK 1000000 // MFRC522 accept upto 10MHz
 #endif
 
 // Firmware data for self-test
@@ -154,7 +155,7 @@ public:
   enum PCD_Register : byte {
     // Page 0: Command and status
     //						  0x00			//
-    //reserved
+    // reserved
     // for
     // future
     // use
@@ -175,7 +176,7 @@ public:
     CollReg = 0x0E << 1, // bit position of the first bit-collision detected on
                          // the RF interface
     //						  0x0F			//
-    //reserved
+    // reserved
     // for
     // future
     // use
@@ -272,14 +273,13 @@ public:
     TestDAC1Reg = 0x39 << 1,   // defines the test value for TestDAC1
     TestDAC2Reg = 0x3A << 1,   // defines the test value for TestDAC2
     TestADCReg = 0x3B << 1     // shows the value of ADC I and Q channels
-                               // 						  0x3C			//
-                           // reserved for production tests
-                           // 						  0x3D			//
-                           // reserved for production tests
-                           // 						  0x3E			//
-                           // reserved for production tests
-                           // 						  0x3F			//
-                           // reserved for production tests
+                               // 						  0x3C
+                               // //
+                               // reserved for production tests
+                               // 						  0x3D
+                           // // reserved for production tests 						  0x3E
+                           // // reserved for production tests 						  0x3F
+                           // // reserved for production tests
   };
 
   // MFRC522 commands. Described in chapter 10 of the datasheet.
