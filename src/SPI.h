@@ -20,6 +20,7 @@ public:
     byte data[2];
 
     if (_address == 0) {
+      _address = val;
       data[0] = (val << 1) & 0x7E;
       return 0;
     }
