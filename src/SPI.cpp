@@ -6,7 +6,7 @@ void SPIObject::beginTransaction(const SPISettings &s) { _address = 0; }
 
 byte SPIObject::transfer(byte val) {
 
-  if (_address == 0) {
+  if (_address != 0) {
     _address = val;
     return 0;
   }
