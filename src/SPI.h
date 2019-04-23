@@ -9,13 +9,14 @@
 
 struct SPISetting {
   SPISettings(int a, int b, int c) {}
+  int a, b, c;
 };
 
 class SPIObject {
 public:
   inline void beginTransaction(const SPISettings &s) {}
 
-  inline byte SPI.transfer(byte val) {
+  inline byte transfer(byte val) {
     byte data[2];
 
     if (_address == 0) {
