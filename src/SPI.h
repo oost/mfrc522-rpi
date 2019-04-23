@@ -24,7 +24,7 @@ public:
     if (wiringPiSPISetup(0, MFRC522_SPICLOCK) < 0)
       throw "Couldn't initialize SPI";
 
-    wiringPiSetupGpio();
+    wiringPiSetup();
   }
 
 private:
