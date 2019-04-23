@@ -7,6 +7,8 @@ void SPIObject::beginTransaction(const SPISettings &s) { _address = 0; }
 byte SPIObject::transfer(byte val) {
 
   if (_address == 0) {
+    std::cout << "Set Address = " << std::hex << static_cast<int>(val) << "\n";
+
     _address = val;
     return 0;
   }
