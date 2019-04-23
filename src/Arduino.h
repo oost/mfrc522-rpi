@@ -15,6 +15,6 @@ typedef char __FlashStringHelper;
 #define SS 24
 #define PROGMEM
 
-#define pgm_read_byte(X) X
+#define pgm_read_byte(X) *(X)
 
 #endif
