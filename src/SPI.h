@@ -42,6 +42,6 @@ private:
   byte _address;
 };
 
-SPIObject SPI;
+extern SPIObject SPI;
 
 #endif
