@@ -8,19 +8,17 @@ void SPIObject::beginTransaction(const SPISettings &s) {
 }
 
 byte SPIObject::transfer(byte val) {
-  byte data[2];
 
   if (_address == 0) {
     _address = val;
-    data[0] = val & 0x7E;
-    std::cout << "Setting address to " << std::hex << static_cast<int>(data[0])
-              << "\n";
     return 0;
   }
-  data[1] = val;
+
+  byte data[2]{_addres & 0x7E, val};
   wiringPiSPIDataRW(0, &data[0], 2);
-  std::cout << "Wrote " << std::hex << static_cast<int>(val) << " and read "
-            << std::hex << static_cast<int>(data[1]) << "\n";
+  std::cout << "Address = " << std::hex << _address << "Wrote = " << std::hex
+            << static_cast<int>(val) << " Read = " << std::hex
+            << static_cast<int>(data[1]) << "\n";
 
   return data[1];
 }
