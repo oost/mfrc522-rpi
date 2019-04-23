@@ -2,6 +2,7 @@
 #define SPI_H
 
 #include "Arduino.h"
+#include <iostream>
 
 #define MFRC522_SPICLOCK 0
 #define MSBFIRST 0
@@ -14,7 +15,10 @@ struct SPISettings {
 
 class SPIObject {
 public:
-  inline void beginTransaction(const SPISettings &s) {}
+  inline void beginTransaction(const SPISettings &s) {
+    _address = 0;
+    std::cout << "Resetting address to 0 \n";
+  }
 
   inline byte transfer(byte val) {
     byte data[2];
@@ -22,14 +26,20 @@ public:
     if (_address == 0) {
       _address = val;
       data[0] = (val << 1) & 0x7E;
+      std::cout << "Setting address to " << std::hex << data[0] << "\n";
       return 0;
     }
     data[1] = val;
     wiringPiSPIDataRW(0, &data[0], 2);
+    std::cout << "Wrote " << std::hex << val << " and read " << data[1] << "\n";
+
     return data[1];
   }
 
-  inline void endTransaction() { _address = 0; }
+  inline void endTransaction() {
+    _address = 0;
+    std::cout << "Resetting address to 0 \n";
+  }
 
   SPIObject() : _address{0} {
 
