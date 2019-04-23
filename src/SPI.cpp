@@ -2,10 +2,7 @@
 
 SPIObject SPI;
 
-void SPIObject::beginTransaction(const SPISettings &s) {
-  _address = 0;
-  // std::cout << "Resetting address to 0 \n";
-}
+void SPIObject::beginTransaction(const SPISettings &s) { _address = 0; }
 
 byte SPIObject::transfer(byte val) {
 
@@ -23,7 +20,4 @@ byte SPIObject::transfer(byte val) {
   return data[1];
 }
 
-void SPIObject::endTransaction() {
-  _address = 0;
-  // std::cout << "Resetting address to 0 \n";
-}
+void SPIObject::endTransaction() { _address = 0; }
