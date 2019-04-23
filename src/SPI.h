@@ -17,7 +17,7 @@ class SPIObject {
 public:
   inline void beginTransaction(const SPISettings &s) {
     _address = 0;
-    std::cout << "Resetting address to 0 \n";
+    // std::cout << "Resetting address to 0 \n";
   }
 
   inline byte transfer(byte val) {
@@ -26,19 +26,20 @@ public:
     if (_address == 0) {
       _address = val;
       data[0] = (val << 1) & 0x7E;
-      std::cout << "Setting address to " << data[0] << "\n";
+      std::cout << "Setting address to " << std::hex << data[0] << "\n";
       return 0;
     }
     data[1] = val;
     wiringPiSPIDataRW(0, &data[0], 2);
-    std::cout << "Wrote " << val << " and read " << data[1] << "\n";
+    std::cout << "Wrote " << std::hex << val << " and read " << std::hex
+              << data[1] << "\n";
 
     return data[1];
   }
 
   inline void endTransaction() {
     _address = 0;
-    std::cout << "Resetting address to 0 \n";
+    // std::cout << "Resetting address to 0 \n";
   }
 
   SPIObject() : _address{0} {
