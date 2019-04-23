@@ -6,9 +6,7 @@
  */
 
 #include "MFRC522.h"
-#include "Serial.h"
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#include "Arduino.h"
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Functions for setting up the Arduino
@@ -66,11 +64,15 @@ void MFRC522::PCD_WriteRegister(
         reg,   ///< The register to write to. One of the PCD_Register enums.
     byte value ///< The value to write.
 ) {
+  SPI.beginTransaction(
+      SPISettings(MFRC522_SPICLOCK, MSBFIRST,
+                  SPI_MODE0));       // Set the settings to work with SPI bus
   digitalWrite(_chipSelectPin, LOW); // Select slave
-
-  byte data[2]{(reg << 1) & 0x7E, val};
-  wiringPiSPIDataRW(_channel, &data[0], 2);
+  SPI.transfer(reg); // MSB == 0 is for writing. LSB is not used in address.
+                     // Datasheet section 8.1.2.3.
+  SPI.transfer(value);
   digitalWrite(_chipSelectPin, HIGH); // Release slave again
+  SPI.endTransaction();               // Stop using the SPI bus
 } // End PCD_WriteRegister()
 
 /**
@@ -83,17 +85,17 @@ void MFRC522::PCD_WriteRegister(
     byte count,  ///< The number of bytes to write to the register
     byte *values ///< The values to write. Byte array.
 ) {
+  SPI.beginTransaction(
+      SPISettings(MFRC522_SPICLOCK, MSBFIRST,
+                  SPI_MODE0));       // Set the settings to work with SPI bus
   digitalWrite(_chipSelectPin, LOW); // Select slave
-
-  byte data[] = new byte[count + 1];
-  data[0] = (addr << 1) & 0x7E;
+  SPI.transfer(reg); // MSB == 0 is for writing. LSB is not used in address.
+                     // Datasheet section 8.1.2.3.
   for (byte index = 0; index < count; index++) {
-    data[index + 1] = values[index];
+    SPI.transfer(values[index]);
   }
-
-  wiringPiSPIDataRW(_channel, &data[0], count + 1);
-  delete[] data;
   digitalWrite(_chipSelectPin, HIGH); // Release slave again
+  SPI.endTransaction();               // Stop using the SPI bus
 } // End PCD_WriteRegister()
 
 /**
@@ -105,14 +107,16 @@ byte MFRC522::PCD_ReadRegister(
         reg ///< The register to read from. One of the PCD_Register enums.
 ) {
   byte value;
+  SPI.beginTransaction(
+      SPISettings(MFRC522_SPICLOCK, MSBFIRST,
+                  SPI_MODE0));       // Set the settings to work with SPI bus
   digitalWrite(_chipSelectPin, LOW); // Select slave
-
-  byte data[2]{((addr << 1) & 0x7E) | 0x80, 0};
   SPI.transfer(0x80 | reg); // MSB == 1 is for reading. LSB is not used in
                             // address. Datasheet section 8.1.2.3.
   value = SPI.transfer(0);  // Read the value back. Send 0 to stop reading.
   digitalWrite(_chipSelectPin, HIGH); // Release slave again
-  return data[1];
+  SPI.endTransaction();               // Stop using the SPI bus
+  return value;
 } // End PCD_ReadRegister()
 
 /**
@@ -129,26 +133,35 @@ void MFRC522::PCD_ReadRegister(
   if (count == 0) {
     return;
   }
-
+  // Serial.print(F("Reading ")); 	Serial.print(count); Serial.println(F("
+  // bytes from register."));
+  byte address = 0x80 | reg; // MSB == 1 is for reading. LSB is not used in
+                             // address. Datasheet section 8.1.2.3.
+  byte index = 0;            // Index in values array.
+  SPI.beginTransaction(
+      SPISettings(MFRC522_SPICLOCK, MSBFIRST,
+                  SPI_MODE0));       // Set the settings to work with SPI bus
   digitalWrite(_chipSelectPin, LOW); // Select slave
-
-  byte[] data = new byte[count + 1];
-  data[0] = 0x80 | reg; // MSB == 1 is for reading. LSB is not used in
-                        // address. Datasheet section 8.1.2.3.
-  wiringPiSPIDataRW(_spiChannel, &data[0], count + 1);
-
-  for (int i = 0; i < count; i++) {
-    values[i] = data[i + 1];
-  }
-
-  if (rxAlign) { // Only update bit positions rxAlign..7 in values[0]
+  count--;               // One read is performed outside of the loop
+  SPI.transfer(address); // Tell MFRC522 which address we want to read
+  if (rxAlign) {         // Only update bit positions rxAlign..7 in values[0]
     // Create bit mask for bit positions rxAlign..7
     byte mask = (0xFF << rxAlign) & 0xFF;
+    // Read value and tell that we want to read the same address again.
+    byte value = SPI.transfer(address);
     // Apply mask to both current value of values[0] and the new data in value.
     values[0] = (values[0] & ~mask) | (value & mask);
+    index++;
   }
-
+  while (index < count) {
+    values[index] = SPI.transfer(address); // Read value and tell that we want
+                                           // to read the same address again.
+    index++;
+  }
+  values[index] =
+      SPI.transfer(0); // Read the final byte. Send 0 to stop reading.
   digitalWrite(_chipSelectPin, HIGH); // Release slave again
+  SPI.endTransaction();               // Stop using the SPI bus
 } // End PCD_ReadRegister()
 
 /**
@@ -229,12 +242,6 @@ MFRC522::StatusCode MFRC522::PCD_CalculateCRC(
  */
 void MFRC522::PCD_Init() {
   bool hardReset = false;
-  _spiChannel = 0;
-
-  if (wiringPiSPISetup(_spiChannel, MFRC522_SPICLOCK) < 0)
-    throw "Couldn't initialize SPI";
-
-  wiringPiSetupGpio();
 
   // Set the chipSelectPin as digital output, do not select the slave yet
   pinMode(_chipSelectPin, OUTPUT);
@@ -748,11 +755,11 @@ MFRC522::StatusCode MFRC522::PICC_REQA_or_WUPA(
  * Cascade levels		Example of PICC
  * 		========	===================		==============
  * ===============
- * 		single				 4
- * 1 MIFARE Classic double				 7 2
- * MIFARE Ultralight triple
- * 10						3				Not currently
- * in use?
+ * 		single				 4						1
+ * MIFARE Classic double				 7
+ * 2				MIFARE Ultralight triple
+ * 10						3				Not currently in
+ * use?
  *
  * @return STATUS_OK on success, STATUS_??? otherwise.
  */
@@ -786,15 +793,13 @@ MFRC522::StatusCode MFRC522::PICC_Select(
   byte responseLength;
 
   // Description of buffer structure:
-  //		Byte 0: SEL 				Indicates the Cascade
-  //Level:
-  // PICC_CMD_SEL_CL1, PICC_CMD_SEL_CL2 or PICC_CMD_SEL_CL3 		Byte 1:
-  // NVB Number of Valid Bits (in complete command, not just the UID): High
-  // nibble: complete bytes, Low nibble: Extra bits. 		Byte 2: UID-data or CT
-  //See explanation below. CT means Cascade Tag. 		Byte 3: UID-data
-  // Byte 4: UID-data 		Byte 5: UID-data 		Byte 6: BCC
-  // Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A 		Byte 8:
-  // CRC_A
+  //		Byte 0: SEL 				Indicates the Cascade Level:
+  //PICC_CMD_SEL_CL1, PICC_CMD_SEL_CL2 or PICC_CMD_SEL_CL3 		Byte 1: NVB
+  //Number of Valid Bits (in complete command, not just the UID): High nibble:
+  //complete bytes, Low nibble: Extra bits.
+  //		Byte 2: UID-data or CT		See explanation below. CT means
+  //Cascade Tag. 		Byte 3: UID-data 		Byte 4: UID-data 		Byte 5: UID-data 		Byte 6: BCC
+  //Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A 		Byte 8: CRC_A
   // The BCC and CRC_A are only transmitted if we know all the UID bits of the
   // current Cascade Level.
   //
@@ -802,13 +807,12 @@ MFRC522::StatusCode MFRC522::PICC_Select(
   // contents and cascade levels)
   //		UID size	Cascade level	Byte2	Byte3	Byte4	Byte5
   //		========	=============	=====	=====	=====	=====
-  //		 4 bytes		1			uid0	uid1
-  //uid2 uid3 		 7 bytes		1			CT
-  // uid0 uid1	uid2 						2
-  // uid3	uid4	uid5	uid6 		10 bytes 1
-  // CT		uid0	uid1	uid2 						2			CT		uid3
-  //uid4 uid5 						3
-  // uid6	uid7	uid8	uid9
+  //		 4 bytes		1			uid0	uid1	uid2
+  //uid3 		 7 bytes		1			CT		uid0
+  //uid1	uid2 						2			uid3	uid4	uid5	uid6 		10 bytes
+  //1			CT		uid0	uid1	uid2
+  //						2			CT		uid3	uid4
+  //uid5 						3			uid6	uid7	uid8	uid9
 
   // Sanity checks
   if (validBits > 80) {
@@ -1030,8 +1034,8 @@ MFRC522::StatusCode MFRC522::PICC_HaltA() {
   // Send the command.
   // The standard says:
   //		If the PICC responds with any modulation during a period of 1 ms
-  // after the end of the frame containing the 		HLTA command, this response
-  // shall be interpreted as 'not acknowledge'.
+  //after the end of the frame containing the 		HLTA command, this response shall
+  //be interpreted as 'not acknowledge'.
   // We interpret that this way: Only STATUS_TIMEOUT is a success.
   result = PCD_TransceiveData(buffer, sizeof(buffer), nullptr, 0);
   if (result == STATUS_TIMEOUT) {
@@ -1507,7 +1511,7 @@ MFRC522::StatusCode MFRC522::PCD_MIFARE_Transceive(
  *
  * @return const __FlashStringHelper *
  */
-const char *MFRC522::GetStatusCodeName(
+const __FlashStringHelper *MFRC522::GetStatusCodeName(
     MFRC522::StatusCode code ///< One of the StatusCode enums.
 ) {
   switch (code) {
@@ -1792,11 +1796,10 @@ void MFRC522::PICC_DumpMifareClassicSectorToSerial(
   // The access bits are stored in a peculiar fashion.
   // There are four groups:
   //		g[3]	Access bits for the sector trailer, block 3 (for sectors
-  // 0-31) or block 15 (for sectors 32-39) 		g[2]	Access bits for block 2
-  // (for sectors 0-31) or blocks 10-14 (for sectors 32-39) 		g[1]
-  // Access bits for block 1 (for sectors 0-31) or blocks 5-9 (for sectors 32-39)
-  // g[0] Access bits for block 0 (for sectors 0-31) or blocks 0-4 (for sectors
-  // 32-39)
+  //0-31) or block 15 (for sectors 32-39) 		g[2]	Access bits for block 2 (for
+  //sectors 0-31) or blocks 10-14 (for sectors 32-39) 		g[1]	Access bits for
+  //block 1 (for sectors 0-31) or blocks 5-9 (for sectors 32-39) 		g[0] Access
+  //bits for block 0 (for sectors 0-31) or blocks 0-4 (for sectors 32-39)
   // Each group has access bits [C1 C2 C3]. In this code C1 is MSB and C3 is
   // LSB. The four CX bits are stored together in a nible cx and an inverted
   // nible cx_.
