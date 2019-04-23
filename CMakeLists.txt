@@ -125,7 +125,7 @@ if (MFRC522_BUILD_EXAMPLES)
 
     add_executable(MFRC522_firmware_check ${MFRC522_FIRMWARE_CHECK})
     target_link_libraries(MFRC522_firmware_check mfrc522 )
-    target_include_directories(MFRC522_firmware_check ${PROJECT_SOURCE_DIR}/src)
+    target_include_directories(MFRC522_firmware_check PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
     # Link target with pthread and dl for linux
     # if (UNIX)
