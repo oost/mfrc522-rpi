@@ -11,7 +11,7 @@ byte SPIObject::transfer(byte val) {
     return 0;
   }
 
-  byte data[2]{_addres & 0x7E, val};
+  byte data[2]{_address & 0x7E, val};
   wiringPiSPIDataRW(0, &data[0], 2);
   std::cout << "Address = " << std::hex << _address << "Wrote = " << std::hex
             << static_cast<int>(val) << " Read = " << std::hex
