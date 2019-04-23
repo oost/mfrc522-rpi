@@ -26,13 +26,14 @@ public:
     if (_address == 0) {
       _address = val;
       data[0] = (val << 1) & 0x7E;
-      std::cout << "Setting address to " << std::hex << data[0] << "\n";
+      std::cout << "Setting address to " << std::hex
+                << static_cast<int>(data[0]) << "\n";
       return 0;
     }
     data[1] = val;
     wiringPiSPIDataRW(0, &data[0], 2);
-    std::cout << "Wrote " << std::hex << val << " and read " << std::hex
-              << data[1] << "\n";
+    std::cout << "Wrote " << std::hex << static_cast<int>(val) << " and read "
+              << std::hex << static_cast<int>(data[1]) << "\n";
 
     return data[1];
   }
