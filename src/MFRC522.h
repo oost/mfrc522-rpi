@@ -89,6 +89,7 @@
 #define __STDC_LIMIT_MACROS
 #include "Arduino.h"
 #include "SPI.h"
+#include "Serial.h"
 #include <stdint.h>
 
 #ifndef MFRC522_SPICLOCK
@@ -149,8 +150,9 @@ public:
   // byte" (section 8.1.2.3)
   enum PCD_Register : byte {
     // Page 0: Command and status
-    //						  0x00			// reserved for
-    //future
+    //						  0x00			// reserved
+    //for
+    // future
     // use
     CommandReg = 0x01 << 1, // starts and stops command execution
     ComIEnReg = 0x02 << 1,  // enable and disable interrupt request control bits
@@ -168,12 +170,14 @@ public:
     BitFramingReg = 0x0D << 1, // adjustments for bit-oriented frames
     CollReg = 0x0E << 1, // bit position of the first bit-collision detected on
                          // the RF interface
-    //						  0x0F			// reserved for
-    //future
+    //						  0x0F			// reserved
+    //for
+    // future
     // use
 
     // Page 1: Command
-    // 						  0x10			// reserved for
+    // 						  0x10			// reserved
+    // for
     // future
     // use
     ModeReg = 0x11 << 1, // defines general modes for transmitting and receiving
@@ -186,34 +190,40 @@ public:
     RxSelReg = 0x17 << 1, // selects internal receiver settings
     RxThresholdReg = 0x18 << 1, // selects thresholds for the bit decoder
     DemodReg = 0x19 << 1,       // defines demodulator settings
-    // 						  0x1A			// reserved for
+    // 						  0x1A			// reserved
+    // for
     // future
     // use
-    // 						  0x1B			// reserved for
+    // 						  0x1B			// reserved
+    // for
     // future
     // use
     MfTxReg =
         0x1C << 1, // controls some MIFARE communication transmit parameters
     MfRxReg =
         0x1D << 1, // controls some MIFARE communication receive parameters
-    // 						  0x1E			// reserved for
+    // 						  0x1E			// reserved
+    // for
     // future
     // use
     SerialSpeedReg =
         0x1F << 1, // selects the speed of the serial UART interface
 
     // Page 2: Configuration
-    // 						  0x20			// reserved for
+    // 						  0x20			// reserved
+    // for
     // future
     // use
     CRCResultRegH =
         0x21 << 1, // shows the MSB and LSB values of the CRC calculation
     CRCResultRegL = 0x22 << 1,
-    // 						  0x23			// reserved for
+    // 						  0x23			// reserved
+    // for
     // future
     // use
     ModWidthReg = 0x24 << 1, // controls the ModWidth setting?
-    // 						  0x25			// reserved for
+    // 						  0x25			// reserved
+    // for
     // future
     // use
     RFCfgReg = 0x26 << 1,  // configures the receiver gain
@@ -232,7 +242,8 @@ public:
     TCounterValueRegL = 0x2F << 1,
 
     // Page 3: Test Registers
-    // 						  0x30			// reserved for
+    // 						  0x30			// reserved
+    // for
     // future
     // use
     TestSel1Reg = 0x31 << 1,  // general test signal configuration
@@ -248,14 +259,18 @@ public:
     TestDAC1Reg = 0x39 << 1,   // defines the test value for TestDAC1
     TestDAC2Reg = 0x3A << 1,   // defines the test value for TestDAC2
     TestADCReg = 0x3B << 1     // shows the value of ADC I and Q channels
-                               // 						  0x3C			// reserved for
-                           // production tests
-                           // 						  0x3D			// reserved for
-                           // production tests
-                           // 						  0x3E			// reserved for
-                           // production tests
-                           // 						  0x3F			// reserved for
-                           // production tests
+                               // 						  0x3C			// reserved
+                               // for
+                               // production tests
+                               // 						  0x3D			// reserved
+                               // for
+                               // production tests
+                               // 						  0x3E			// reserved
+                               // for
+                               // production tests
+                               // 						  0x3F			// reserved
+                               // for
+                               // production tests
   };
 
   // MFRC522 commands. Described in chapter 10 of the datasheet.
