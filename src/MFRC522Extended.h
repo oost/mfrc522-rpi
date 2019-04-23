@@ -8,6 +8,7 @@
 
 #include "Arduino.h"
 #include "MFRC522.h"
+#include "Serial.h"
 
 class MFRC522Extended : public MFRC522 {
 

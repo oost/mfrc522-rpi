@@ -7,8 +7,8 @@
 #define MSBFIRST 0
 #define SPI_MODE0 0
 
-struct SPISetting {
-  SPISettings(int a, int b, int c) : a(a), b(b), c(c) {}
+struct SPISettings {
+  SPISettings(int _a, int _b, int _c) : a(_a), b(_b), c(_c) {}
   int a, b, c;
 };
 
