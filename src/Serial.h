@@ -35,6 +35,6 @@ public:
   }
 };
 
-SerialMock Serial;
+extern SerialMock Serial;
 
 #endif
