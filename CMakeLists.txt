@@ -51,8 +51,8 @@ endif ()
 set(MFRC522_SRC
     ${PROJECT_SOURCE_DIR}/src/MFRC522Extended.cpp
     ${PROJECT_SOURCE_DIR}/src/MFRC522.cpp
-    ${PROJECT_SOURCE_DIR}/src/SPI.cpp
-    ${PROJECT_SOURCE_DIR}/src/Serial.cpp
+    # ${PROJECT_SOURCE_DIR}/src/SPI.cpp
+    # ${PROJECT_SOURCE_DIR}/src/Serial.cpp
 )
 
 source_group(src FILES ${MFRC522_SRC})
