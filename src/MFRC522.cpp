@@ -758,8 +758,7 @@ MFRC522::StatusCode MFRC522::PICC_REQA_or_WUPA(
  * 		single				 4
  * 1 MIFARE Classic double				 7 2
  * MIFARE Ultralight triple
- * 10						3				Not
- * currently in use?
+ * 10						3 Not currently in use?
  *
  * @return STATUS_OK on success, STATUS_??? otherwise.
  */
@@ -797,13 +796,12 @@ MFRC522::StatusCode MFRC522::PICC_Select(
   // Level:
   // PICC_CMD_SEL_CL1, PICC_CMD_SEL_CL2 or PICC_CMD_SEL_CL3 		Byte 1:
   // NVB Number of Valid Bits (in complete command, not just the UID): High
-  // nibble: complete bytes, Low nibble: Extra bits. 		Byte 2: UID-data or
-  // CT
-  // See explanation below. CT means Cascade Tag. 		Byte 3: UID-data
-  // Byte 4: UID-data 		Byte 5: UID-data 		Byte 6: BCC
-  // Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A 		Byte
-  // 8: CRC_A The BCC and CRC_A are only transmitted if we know all the UID bits
-  // of the current Cascade Level.
+  // nibble: complete bytes, Low nibble: Extra bits. 		Byte 2: UID-data
+  // or CT See explanation below. CT means Cascade Tag. 		Byte 3:
+  // UID-data Byte 4: UID-data 		Byte 5: UID-data 		Byte 6:
+  // BCC Block Check Character - XOR of bytes 2-5 		Byte 7: CRC_A
+  // Byte 8: CRC_A The BCC and CRC_A are only transmitted if we know all the UID
+  // bits of the current Cascade Level.
   //
   // Description of bytes 2-5: (Section 6.5.4 of the ISO/IEC 14443-3 draft: UID
   // contents and cascade levels)
@@ -813,10 +811,9 @@ MFRC522::StatusCode MFRC522::PICC_Select(
   // uid2 uid3 		 7 bytes		1			CT
   // uid0 uid1	uid2 						2
   // uid3	uid4	uid5	uid6 		10 bytes 1
-  // CT		uid0	uid1	uid2 						2			CT
-  // uid3
-  // uid4 uid5 						3
-  // uid6	uid7	uid8	uid9
+  // CT		uid0	uid1	uid2 2
+  // CT uid3 uid4 uid5 						3 uid6	uid7
+  // uid8	uid9
 
   // Sanity checks
   if (validBits > 80) {
@@ -1515,7 +1512,7 @@ MFRC522::StatusCode MFRC522::PCD_MIFARE_Transceive(
  *
  * @return const __FlashStringHelper *
  */
-const __FlashStringHelper *MFRC522::GetStatusCodeName(
+const char *MFRC522::GetStatusCodeName(
     MFRC522::StatusCode code ///< One of the StatusCode enums.
 ) {
   switch (code) {
@@ -1586,7 +1583,7 @@ MFRC522::PICC_GetType(byte sak ///< The SAK byte returned from PICC_Select().
  *
  * @return const __FlashStringHelper *
  */
-const __FlashStringHelper *
+const char *
 MFRC522::PICC_GetTypeName(PICC_Type piccType ///< One of the PICC_Type enums.
 ) {
   switch (piccType) {
@@ -1801,9 +1798,9 @@ void MFRC522::PICC_DumpMifareClassicSectorToSerial(
   // The access bits are stored in a peculiar fashion.
   // There are four groups:
   //		g[3]	Access bits for the sector trailer, block 3 (for sectors
-  // 0-31) or block 15 (for sectors 32-39) 		g[2]	Access bits for block
-  // 2 (for sectors 0-31) or blocks 10-14 (for sectors 32-39) 		g[1]
-  // Access bits for block 1 (for sectors 0-31) or blocks 5-9 (for sectors
+  // 0-31) or block 15 (for sectors 32-39) 		g[2]	Access bits for
+  // block 2 (for sectors 0-31) or blocks 10-14 (for sectors 32-39)
+  // g[1] Access bits for block 1 (for sectors 0-31) or blocks 5-9 (for sectors
   // 32-39) g[0] Access bits for block 0 (for sectors 0-31) or blocks 0-4 (for
   // sectors 32-39) Each group has access bits [C1 C2 C3]. In this code C1 is
   // MSB and C3 is LSB. The four CX bits are stored together in a nible cx and

@@ -150,7 +150,7 @@ public:
   enum PCD_Register : byte {
     // Page 0: Command and status
     //						  0x00			//
-    //reserved
+    // reserved
     // for
     // future
     // use
@@ -171,7 +171,7 @@ public:
     CollReg = 0x0E << 1, // bit position of the first bit-collision detected on
                          // the RF interface
     //						  0x0F			//
-    //reserved
+    // reserved
     // for
     // future
     // use
@@ -268,14 +268,15 @@ public:
     TestDAC1Reg = 0x39 << 1,   // defines the test value for TestDAC1
     TestDAC2Reg = 0x3A << 1,   // defines the test value for TestDAC2
     TestADCReg = 0x3B << 1     // shows the value of ADC I and Q channels
-                               // 						  0x3C			//
-                           // reserved for production tests
-                           // 						  0x3D			//
-                           // reserved for production tests
-                           // 						  0x3E			//
-                           // reserved for production tests
-                           // 						  0x3F			//
-                           // reserved for production tests
+                               // 						  0x3C
+                               // //
+                               // reserved for production tests
+                               // 						  0x3D			//
+                               // reserved for production tests
+                               // 						  0x3E			//
+                               // reserved for production tests
+                               // 						  0x3F			//
+                               // reserved for production tests
   };
 
   // MFRC522 commands. Described in chapter 10 of the datasheet.
@@ -505,12 +506,12 @@ public:
   // old function used too much memory, now name moved to flash; if you need
   // char, copy from flash to memory
   // const char *GetStatusCodeName(byte code);
-  static const __FlashStringHelper *GetStatusCodeName(StatusCode code);
+  static const char *GetStatusCodeName(StatusCode code);
   static PICC_Type PICC_GetType(byte sak);
   // old function used too much memory, now name moved to flash; if you need
   // char, copy from flash to memory
   // const char *PICC_GetTypeName(byte type);
-  static const __FlashStringHelper *PICC_GetTypeName(PICC_Type type);
+  static const char *PICC_GetTypeName(PICC_Type type);
 
   // Support functions for debuging
   void PCD_DumpVersionToSerial();
