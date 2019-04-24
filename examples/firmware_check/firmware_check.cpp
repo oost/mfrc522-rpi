@@ -27,16 +27,17 @@
  */
 
 #include "MFRC522.h"
-#include "SPI.h"
-#include "Serial.h"
+#include <SPI.h>
+#include <Serial.h>
 
-#define RST_PIN 6 // Configurable, see typical pin layout above
-#define SS_PIN 10 // Configurable, see typical pin layout above
+#define RST_PIN 25 // Configurable, see typical pin layout above
+#define SS_PIN 8   // Configurable, see typical pin layout above
 
 /**
  * Check firmware only once at startup
  */
 int main() {
+  SPI.begin();
   MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 
   mfrc522.PCD_Init(); // Init MFRC522 module
