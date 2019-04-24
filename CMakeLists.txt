@@ -95,10 +95,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # add sources 
 add_library(mfrc522 ${MFRC522_SRC} ${MFRC522_INC} ${MFRC522_SCRIPT})
-
-if (UNIX AND NOT APPLE)
-    target_link_libraries(mfrc522 wiringPi)
-endif(UNIX AND NOT APPLE)
+target_link_libraries(mfrc522 wiringPi piduino)
 
 
 option(MFRC522_RUN_CPPCHECK "Run cppcheck C++ static analysis tool." ON)
