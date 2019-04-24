@@ -138,7 +138,7 @@ if (MFRC522_BUILD_EXAMPLES)
 
     # Link target with pthread and dl for linux
     # if (UNIX)
-        target_link_libraries(MFRC522_example1 pthread)
+        # target_link_libraries(MFRC522_example1 pthread)
     #     if (NOT APPLE)
     #         target_link_libraries(MFRC522_example1 dl)
     #     endif ()
