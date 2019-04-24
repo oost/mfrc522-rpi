@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.7) # first version with add_compile_options()
 project(MFRC522)
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
-set(THREADS_PREFER_PTHREAD_FLAG 1)
 
 message (STATUS "CMake version: ${CMAKE_VERSION}")
 set(CMAKE_CXX_STANDARD 14)
@@ -107,7 +108,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 # add sources 
 add_library(mfrc522 ${MFRC522_SRC} ${MFRC522_INC} ${MFRC522_SCRIPT})
 target_include_directories(mfrc522 SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/src/piduino/)
-target_link_libraries(mfrc522 Thread::Threads)
+target_link_libraries(mfrc522 Threads::Threads)
 
 option(MFRC522_RUN_CPPCHECK "Run cppcheck C++ static analysis tool." ON)
 if (MFRC522_RUN_CPPCHECK)
