@@ -105,7 +105,7 @@ public:
   unsigned char concat(unsigned long num);
   unsigned char concat(float num);
   unsigned char concat(double num);
-  unsigned char concat(const __FlashStringHelper *str);
+  // unsigned char concat(const __FlashStringHelper *str);
 
   // if there's not enough memory for the concatenated value, the string
   // will be left unchanged (but this isn't signalled in any way)
