@@ -51,8 +51,11 @@ endif ()
 set(MFRC522_SRC
     ${PROJECT_SOURCE_DIR}/src/MFRC522Extended.cpp
     ${PROJECT_SOURCE_DIR}/src/MFRC522.cpp
-    # ${PROJECT_SOURCE_DIR}/src/SPI.cpp
-    # ${PROJECT_SOURCE_DIR}/src/Serial.cpp
+    ${PROJECT_SOURCE_DIR}/src/piduino/Core.cpp
+    ${PROJECT_SOURCE_DIR}/src/piduino/Wire.cpp
+    ${PROJECT_SOURCE_DIR}/src/piduino/WString.cpp
+    ${PROJECT_SOURCE_DIR}/src/piduino/SPI.cpp
+    ${PROJECT_SOURCE_DIR}/src/piduino/Serial.cpp
 )
 
 source_group(src FILES ${MFRC522_SRC})
@@ -62,6 +65,12 @@ set(MFRC522_INC
     ${PROJECT_SOURCE_DIR}/src/MFRC522.h
     ${PROJECT_SOURCE_DIR}/src/MFRC522Extended.h
     ${PROJECT_SOURCE_DIR}/src/require_cpp11.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/Core.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/Wire.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/WString.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/SPI.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/Serial.h
+    ${PROJECT_SOURCE_DIR}/src/piduino/Arduino.h
 )
 source_group(include FILES ${MFRC522_INC})
 
@@ -78,7 +87,7 @@ source_group(include FILES ${MFRC522_INC})
 # source_group(auth_read_write FILES ${MFRC522_AUTH_READ_WRITE})
 
 set(MFRC522_FIRMWARE_CHECK
-${PROJECT_SOURCE_DIR}/examples/firmware_check/firmware_check.cpp
+    ${PROJECT_SOURCE_DIR}/examples/firmware_check/firmware_check.cpp
 )
 source_group(firmware_check FILES ${MFRC522_FIRMWARE_CHECK})
 
@@ -95,8 +104,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # add sources 
 add_library(mfrc522 ${MFRC522_SRC} ${MFRC522_INC} ${MFRC522_SCRIPT})
-target_link_libraries(mfrc522 wiringPi piduino)
-
+target_include_directories(mfrc522 SYSTEM ${PROJECT_SOURCE_DIR}/src/piduino/)
 
 option(MFRC522_RUN_CPPCHECK "Run cppcheck C++ static analysis tool." ON)
 if (MFRC522_RUN_CPPCHECK)
