@@ -104,7 +104,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # add sources 
 add_library(mfrc522 ${MFRC522_SRC} ${MFRC522_INC} ${MFRC522_SCRIPT})
-target_include_directories(mfrc522 SYSTEM ${PROJECT_SOURCE_DIR}/src/piduino/)
+target_include_directories(mfrc522 SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/src/piduino/)
 
 option(MFRC522_RUN_CPPCHECK "Run cppcheck C++ static analysis tool." ON)
 if (MFRC522_RUN_CPPCHECK)
