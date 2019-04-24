@@ -18,8 +18,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef piDuino_h
-#define piDuino_h
+#ifndef ARDUINO_h
+#define ARDUINO_h
 
 #include "Core.h"
 #include "SPI.h"
@@ -32,7 +32,6 @@
 #include <string.h>
 #include <time.h>
 
-typedef char __FlashStringHelper;
 #define SS 10
 
 #endif

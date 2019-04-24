@@ -35,6 +35,8 @@
 //     -std=c++0x
 
 // class __FlashStringHelper;
+typedef char __FlashStringHelper;
+
 #define F(string_literal) (string_literal)
 
 // An inherited class for holding the result of a concatenation.  These
