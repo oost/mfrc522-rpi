@@ -3,3 +3,4 @@
 .idea
 build/*
 _build/*
+test/test_mfrc522

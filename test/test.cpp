@@ -5,7 +5,7 @@
 
 #define SDA_PIN 8 // SDA
 #define RST_PIN 25
-#define byt u_int_8
+typedef uint8_t byte;
 
 void init() {
   if (wiringPiSPISetup(0, 1000000) < 0)
@@ -13,8 +13,13 @@ void init() {
 
   wiringPiSetupGpio();
 
+  pinMode(RST_PIN, OUTPUT);
+  digitalWrite(RST_PIN, HIGH);
+
+#ifdef SELECT
   pinMode(SDA_PIN, OUTPUT);
   digitalWrite(SDA_PIN, HIGH);
+#endif
 }
 
 void writeToRegister(byte addr, byte val) {
@@ -26,7 +31,7 @@ void writeToRegister(byte addr, byte val) {
 #endif
 
   byte data[2]{(addr << 1) & 0x7E, val};
-  wiringPiSPIDataRW(_channel, &data[0], 2);
+  wiringPiSPIDataRW(0, &data[0], 2);
 
 #ifdef SELECT
   digitalWrite(SDA_PIN, HIGH);
@@ -40,7 +45,7 @@ byte readFromRegister(byte addr) {
 #endif
   byte data[2]{((addr << 1) & 0x7E) | 0x80, 0};
 
-  wiringPiSPIDataRW(_channel, &data[0], 2);
+  wiringPiSPIDataRW(0, &data[0], 2);
   std::cout << "Read," << static_cast<int>(addr) << ","
             << static_cast<int>(data[1]) << "\n";
 #ifdef SELECT
@@ -50,6 +55,10 @@ byte readFromRegister(byte addr) {
 }
 
 int main() {
+#ifdef SELECT
+  std::cout << "Running with SELECT on\n";
+#endif
+  std::cout << "SDA=" << SDA_PIN << "  RST=" << RST_PIN << "\n";	
   init();
 
   std::cout << "Reset\n";
@@ -60,7 +69,7 @@ int main() {
   writeToRegister(TReloadRegH, 0);
   writeToRegister(TxAutoReg, 0x40); // 100%ASK
   writeToRegister(ModeReg, 0x3D);   // CRC initial value 0x6363
-  setBitMask(TxControlReg, 0x03);   // Turn antenna on.
+  writeToRegister(TxControlReg, 0x03);   // Turn antenna on.
 
   std::cout << "Version: " << std::hex
             << static_cast<int>(readFromRegister(VersionReg));
