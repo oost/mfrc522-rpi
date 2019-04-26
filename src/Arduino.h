@@ -12,9 +12,8 @@ typedef char __FlashStringHelper;
 
 #define SPI_CLOCK_DIV4 1000000 // MFRC522 accept upto 10MHz
 
-#define SS 10
+#define SS 8 
 #define PROGMEM
-
-#define pgm_read_byte(X) *(X)
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 
 #endif

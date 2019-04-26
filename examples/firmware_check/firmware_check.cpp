@@ -30,26 +30,34 @@
 #include "SPI.h"
 #include "Serial.h"
 
-#define RST_PIN 6 // Configurable, see typical pin layout above
-#define SS_PIN 10 // Configurable, see typical pin layout above
+#define RST_PIN 25 // Configurable, see typical pin layout above
+#define SS_PIN 8 // Configurable, see typical pin layout above
 
 /**
  * Check firmware only once at startup
  */
 int main() {
-  MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
+  if (wiringPiSPISetup(0, 1000000) < 0 )
+	  throw "Couldn't initialize SPI";
 
+  wiringPiSetupGpio();
+
+
+  MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
+  //std::cout << "Unused pin " << UNUSED_PIN << "\n";
+  mfrc522.PCD_Reset();
   mfrc522.PCD_Init(); // Init MFRC522 module
 
-  Serial.println(F("*****************************"));
-  Serial.println(F("MFRC522 Digital self test"));
-  Serial.println(F("*****************************"));
+//  Serial.println(F("*****************************"));
+//  Serial.println(F("MFRC522 Digital self test"));
+//  Serial.println(F("*****************************"));
   mfrc522
       .PCD_DumpVersionToSerial(); // Show version of PCD - MFRC522 Card Reader
-  Serial.println(F("-----------------------------"));
-  Serial.println(F("Only known versions supported"));
-  Serial.println(F("-----------------------------"));
-  Serial.println(F("Performing test..."));
+  //Serial.println(F("-----------------------------"));
+  //Serial.println(F("Only known versions supported"));
+//  Serial.println(F("-----------------------------"));
+//  Serial.println(F("Performing test..."));
+  for(int i=0; i<50;i++){
   bool result = mfrc522.PCD_PerformSelfTest(); // perform the test
   Serial.println(F("-----------------------------"));
   Serial.print(F("Result: "));
@@ -58,4 +66,5 @@ int main() {
   else
     Serial.println(F("DEFECT or UNKNOWN"));
   Serial.println();
+  }
 }
